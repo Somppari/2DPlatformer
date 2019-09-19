@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Fire
   - GM
+  - Enemy
   layers:
   - Default
   - TransparentFX
