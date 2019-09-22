@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameMaster : MonoBehaviour
@@ -7,7 +6,10 @@ public class GameMaster : MonoBehaviour
 
     public static GameMaster gm;
 
-    private static int _remainingLives = 3;
+    [SerializeField]
+    private int maxLives = 3;
+
+    private static int _remainingLives;
     public static int RemainingLives
     {
         get { return _remainingLives; }
@@ -37,6 +39,8 @@ public class GameMaster : MonoBehaviour
         {
             Debug.LogError("No camera shake referenced in GameMaster");
         }
+
+        _remainingLives = maxLives;
     }
 
     public void EndGame()
