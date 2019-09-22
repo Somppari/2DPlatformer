@@ -27,11 +27,15 @@ public class GameMaster : MonoBehaviour
     public Transform spawnPoint;
     public int spawnDelay = 2;
     public Transform spawnPrefab;
+    public string spawnSoundName;
 
     public CameraShake cameraShake;
 
     [SerializeField]
     private GameObject gameOverUI;
+
+    //cache
+    private AudioManager audioManager;
 
     void Start()
     {
@@ -41,6 +45,13 @@ public class GameMaster : MonoBehaviour
         }
 
         _remainingLives = maxLives;
+
+        //caching
+        audioManager = AudioManager.instance;
+        if(audioManager == null)
+        {
+            Debug.LogError("No AudioManager found in the scene.");
+        }
     }
 
     public void EndGame()
@@ -53,8 +64,9 @@ public class GameMaster : MonoBehaviour
 
     public IEnumerator _RespawnPlayer()
     {
-        GetComponent<AudioSource>().Play();
+        audioManager.PlaySound(spawnSoundName);
         yield return new WaitForSeconds(spawnDelay);
+
         Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation);
         Transform clone = Instantiate(spawnPrefab, spawnPoint.position, spawnPoint.rotation) as Transform;
         Destroy(clone.gameObject, 3f);
