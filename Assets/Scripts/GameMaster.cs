@@ -21,13 +21,22 @@ public class GameMaster : MonoBehaviour
         {
             gm = GameObject.FindGameObjectWithTag("GM").GetComponent<GameMaster>();
         }
+
+        audioManager = AudioManager.instance;
+        if (audioManager == null)
+        {
+            Debug.LogError("No AudioManager found in the scene.");
+        }
     }
 
     public Transform playerPrefab;
     public Transform spawnPoint;
     public int spawnDelay = 2;
     public Transform spawnPrefab;
-    public string spawnSoundName;
+    public string respawnCountdownSoundName = "RespawnCountdown";
+    public string spawnSoundName = "Spawn";
+
+    public string gameOverSoundName = "GameOver";
 
     public CameraShake cameraShake;
 
@@ -47,15 +56,12 @@ public class GameMaster : MonoBehaviour
         _remainingLives = maxLives;
 
         //caching
-        audioManager = AudioManager.instance;
-        if(audioManager == null)
-        {
-            Debug.LogError("No AudioManager found in the scene.");
-        }
+        
     }
 
     public void EndGame()
     {
+        audioManager.PlaySound(gameOverSoundName);
         Debug.Log("GAME OVER");
         gameOverUI.SetActive(true);
     }
@@ -64,9 +70,10 @@ public class GameMaster : MonoBehaviour
 
     public IEnumerator _RespawnPlayer()
     {
-        audioManager.PlaySound(spawnSoundName);
+        audioManager.PlaySound(respawnCountdownSoundName);
         yield return new WaitForSeconds(spawnDelay);
 
+        audioManager.PlaySound(spawnSoundName);
         Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation);
         Transform clone = Instantiate(spawnPrefab, spawnPoint.position, spawnPoint.rotation) as Transform;
         Destroy(clone.gameObject, 3f);
@@ -95,8 +102,14 @@ public class GameMaster : MonoBehaviour
 
     public void _KillEnemy(Enemy _enemy)
     {
+        // play explosion sounds
+        audioManager.PlaySound(_enemy.deathSoundName);
+
+        // Add particles
         GameObject _clone = Instantiate(_enemy.deathParticles, _enemy.transform.position, Quaternion.identity).gameObject;
         Destroy(_clone, 5f);
+
+        // Go camerashake
         cameraShake.Shake(_enemy.shakeAmt, _enemy.shakeLength);
         Destroy(_enemy.gameObject);
     }
