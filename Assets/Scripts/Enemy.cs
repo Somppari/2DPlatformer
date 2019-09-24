@@ -1,7 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
+[RequireComponent(typeof(EnemyAI))]
 public class Enemy : MonoBehaviour
 {
     [System.Serializable]
@@ -52,6 +51,14 @@ public class Enemy : MonoBehaviour
         {
             Debug.LogError("No death particles referenced on Enemy");
         }
+
+        GameMaster.gm.onToggleUpgradeMenu += OnUpgradeMenuToggle;
+    }
+
+    void OnUpgradeMenuToggle(bool active)
+    {
+        GetComponent<EnemyAI>().enabled = !active;
+        
     }
 
     public void DamageEnemy(int damage)
@@ -76,5 +83,10 @@ public class Enemy : MonoBehaviour
             _player.DamagePlayer(stats.damage);
             DamageEnemy(99999);
         }
+    }
+
+    void OnDestroy()
+    {
+        GameMaster.gm.onToggleUpgradeMenu -= OnUpgradeMenuToggle;
     }
 }

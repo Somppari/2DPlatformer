@@ -1,7 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityStandardAssets._2D;
 
+[RequireComponent(typeof(Platformer2DUserControl))]
 public class Player : MonoBehaviour
 {
 
@@ -15,7 +15,7 @@ public class Player : MonoBehaviour
         public int curHealth
         {
             get { return _curHealth; }
-            set { _curHealth = Mathf.Clamp(value, 0, maxHealth);  }
+            set { _curHealth = Mathf.Clamp(value, 0, maxHealth); }
         }
 
         public void Init()
@@ -46,7 +46,6 @@ public class Player : MonoBehaviour
         }
     }
 
-
     void Start()
     {
 
@@ -59,6 +58,8 @@ public class Player : MonoBehaviour
         {
             statusIndicator.SetHealth(stats.curHealth, stats.maxHealth);
         }
+
+        GameMaster.gm.onToggleUpgradeMenu += OnUpgradeMenuToggle;
     }
 
     void Update()
@@ -67,6 +68,21 @@ public class Player : MonoBehaviour
         {
             DamagePlayer(9999999);
         }
+    }
+
+    void OnUpgradeMenuToggle (bool active)
+    {
+        GetComponent<Platformer2DUserControl>().enabled = !active;
+        Weapon _weapon = GetComponentInChildren<Weapon>();
+        if (_weapon != null)
+        {
+            _weapon.enabled = !active;
+        }
+    }
+
+    void OnDestroy()
+    {
+        GameMaster.gm.onToggleUpgradeMenu -= OnUpgradeMenuToggle;
     }
 
 
